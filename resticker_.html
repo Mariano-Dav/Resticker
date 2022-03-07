@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Reservations Message Of The Day</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css"
+    />
+    <link rel="stylesheet" href="./resticker.css" />
+  </head>
+  <style>
+    /*table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+      background-color: #ddebf7;
+      height: 95vh;
+    }
+    th {
+      background-color: #9bc2e6;
+    }
+
+    td,
+    th {
+      border: 1px solid #000;
+      text-align: left;
+      /* padding: 8px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #9bc2e6;
+    }*/
+  </style>
+  <body>
+    <!-- partial:index.partial.html -->
+    <div class="ticker-wrap">
+      <div class="ticker">
+        <div class="ticker__item"><div id="formd_0_0">Test Msg</div></div>
+      </div>
+    </div>
+    <div>
+      <span class="currenttiels"></span>
+      <table class="container" id="myTable">
+        <thead>
+          <th><h1>Agent Name</h1></th>
+          <th><h1>Current State</h1></th>
+          <th><h1>Agent Extension</h1></th>
+          <th><h1>Time In State</h1></th>
+
+        </thead>
+        <tbody>
+          <!-- <tr class="tr_formd_0">
+            <td class="formd_0_0">0</td>
+            <td class="formd_0_1">0</td>
+            <td class="formd_0_2">0</td>
+            <td class="formd_0_3">0</td>
+          </tr> -->
+        </tbody>
+      </table>
+    </div>
+    <script type="text/javascript">
+      const delay = 5000;
+      var g_List = [{ name: String, time: String }];
+      calltiwlfun();
+      setInterval(function () {
+        calltiwlfun();
+      }, delay);
+      function calltiwlfun() {
+        var now = new Date();
+        var timenow = Date.now();
+        var startOfDay = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate()
+        );
+        var timestamp = startOfDay / 1000;
+        var epochtime = timestamp * 1000;
+        //console.log(timestamp, Date.now());
+        //timestamp =Date.now();
+        /*var timestamp_UTC = new Date();
+var timestamp = timestamp_UTC.toLocaleDateString("en-AU", {timeZone: "Australia/Sydney"}).replace(/\//g, "-") + ' ' + timestamp_UTC.toLocaleTimeString("en-AU", {timeZone: "Australia/Sydney"});*/
+        //timestamp = 1628776800000;
+        var date = new Date(timestamp * 1000);
+        // Hours part from the timestamp
+        var hours = date.getHours();
+        // Minutes part from the timestamp
+        var minutes = "0" + date.getMinutes();
+        // Seconds part from the timestamp
+        var seconds = "0" + date.getSeconds();
+
+        // Will display time in 10:30:23 format
+        var formattedTime =
+          date.getDate() +
+          "-" +
+          date.getMonth() +
+          "-" +
+          date.getFullYear() +
+          " " +
+          hours +
+          ":" +
+          minutes.substr(-2) +
+          ":" +
+          seconds.substr(-2);
+        //jQuery(".currenttiels").html(formattedTime);
+        //"1628776800000"
+        //var mysitlw = "1628776800000";
+
+              var sdataeisn = '{"dateBegin":['+epochtime+'],"timezone":"Australia/Sydney","numberOfRecords":1000000,"lastNRecords":false,"filterGroups":[{"operator":"AND","valueFilters":[{"columnName":"cetts","value":"-1","operator":"EQUAL","includeIfColumnNotPresent":false}]},{"operator":"OR","valueFilters":[{"columnName":"teamName__s","value":"MEL_RESERVATIONS","operator":"EQUAL","includeIfColumnNotPresent":false}]}],"activityType":"AAR","aggregateQueryProperties":{"computeInterval":0,"computeIntervalUnit":"NONE","lookbackCount":0,"frequency":0,"movingWindow":false,"cumulative":false,"rowSegmentSet":[],"columnSegmentSet":[],"queryType":"TEMPORAL","requestType":"PROFILE","intervalAxis":"ROW","computeSummaries":true},"aggregations":[{"filterGroups":[{"operator":"AND","valueFilters":[]},{"operator":"OR","valueFilters":[{"columnName":"teamName__s","value":"MEL_RESERVATIONS","operator":"EQUAL","includeIfColumnNotPresent":false},{"columnName":"teamName__s","value":"MEL_GSC","operator":"EQUAL","includeIfColumnNotPresent":false}]}],"aggregationType":"VALUE","computeColumnName":"agentName__s","id":0},{"filterGroups":[{"operator":"AND","valueFilters":[]},{"operator":"OR","valueFilters":[{"columnName":"teamName__s","value":"MEL_GSC","operator":"EQUAL","includeIfColumnNotPresent":false},{"columnName":"teamName__s","value":"MEL_RESERVATIONS","operator":"EQUAL","includeIfColumnNotPresent":false}]}],"aggregationType":"VALUE","computeColumnName":"currentState__s","id":1},{"filterGroups":[{"operator":"AND","valueFilters":[]}],"aggregationType":"VALUE","computeColumnName":"agentDn__s","id":2},{"filterGroups":[{"operator":"AND","valueFilters":[]}],"aggregationType":"VALUE","computeColumnName":"cstts","id":3}],"anchorId":"10863"}';
+
+        var url = "https://rest.wxcc-anz1.cisco.com/aws/api/aars?q=" + encodeURI(sdataeisn);
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url);
+        xhr.setRequestHeader(
+          "Authorization",
+          "a0O32hpd146QZWoJrczG00/86cg=;tenantId=68bbf765-3646-4d3f-a170-3edba9082081"
+        );
+        xhr.setRequestHeader("From", "matthew.pook@crownresorts.com.au");
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("Accept", "text/csv");
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            var csv = xhr.responseText;
+            console.log(csv);
+            var rowCount = myTable.rows.length;
+            for (var i = rowCount - 1; i > 0; i--) {
+                myTable.deleteRow(i);
+            }
+
+            var array = csv.toString().split("\n");
+            let result = [];
+            let greenList = [];
+            let oragneList = [];
+            let other = [];
+            for (let i = 1; i < array.length - 1; i++) {
+              let obj = {};
+              let str = array[i];
+              obj = str.toString().split(",");
+              if(obj[2] === "available") greenList.push(obj);
+              else if(obj[2] === "idle") oragneList.push(obj);
+              else other.push(obj);
+            }
+            result.push(greenList);
+            result.push(oragneList);
+            result.push(other);
+            if(greenList.length || oragneList.length || other.length) {
+              $.each(result, function (i, lstValue) {
+                if(!i)  $("#myTable tbody").remove();
+                $.each(lstValue, function (index, value) {
+                  var table = $("#myTable");
+                  var newRow = document.createElement("tr");
+                  var newCell1 = document.createElement("td");
+                  var newCell2 = document.createElement("td");
+                  var newCell3 = document.createElement("td");
+                  var newCell4 = document.createElement("td");
+                  var timeInState = (timenow - value[4]);
+                  var recogTime = msToHMS(timeInState);
+                  newCell2.classList.add("formd_0_1");
+                  newCell3.classList.add("formd_0_3");
+                  newCell4.classList.add("formd_0_4");
+                  newCell1.innerText = value[1];
+                  newCell2.innerText = value[2];
+                  newCell3.innerText = value[3];
+                  newCell4.innerText = recogTime;
+                  if (!searchTable(value[1], recogTime)) {
+                    if (value[2] === "idle") {
+                      newCell1.style.backgroundColor = "orange";
+                      newCell2.style.backgroundColor = "orange";
+                      newCell3.style.backgroundColor = "orange";
+                      newCell4.style.backgroundColor = "orange";
+                    }
+                    if (value[2] === "available") {
+                      newCell1.style.backgroundColor = "green";
+                      newCell2.style.backgroundColor = "green";
+                      newCell3.style.backgroundColor = "green";
+                      newCell4.style.backgroundColor = "green";
+
+                    }
+                    newRow.append(newCell1, newCell2, newCell3, newCell4);
+                    table.append(newRow);
+                  }
+                });
+              });
+            }
+          }
+        };
+        xhr.send();
+      }
+
+      function msToHMS(time) {
+        var milliseconds = parseInt((time % 1000) / 100),
+          seconds = parseInt((time / 1000) % 60),
+          minutes = parseInt((time / (1000 * 60)) % 60),
+          hours = parseInt((time / (1000 * 60 * 60)) % 24);
+
+        hours = hours < 10 ? "0" + hours : hours;
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        return hours + ":" + minutes + ":" + seconds;
+      };
+
+      /*
+        @brief - search data from table
+        @param - name : the input name
+                 time : the input time
+        @return - true or false
+      */
+      function searchTable(name, time) {
+        var flag = false;
+        $("#myTable tbody tr").each(function (data) {
+          let temp = this.children;
+          if (temp[0].innerText === name && temp[2].innerText === time)
+            flag = true;
+        });
+        return flag;
+      }
+    </script>
+  </body>
+  <!-- partial -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script type="text/javascript">
+    tickermsg();
+    setInterval(function () {
+      tickermsg();
+    }, delay);
+    function tickermsg() {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        //this will execute when you receive response from the server
+        if (this.readyState == 4 && this.status == 200) {
+          var StickerMsg = this.responseText;
+          //            document.getElementById(".formd_0_0").innerHTML == this.responseText;
+          document.getElementById("formd_0_0").innerHTML = StickerMsg;
+        }
+      };
+      xhttp.open("GET", "resticker.txt", true);
+      xhttp.setRequestHeader("Cache-Control", "no-cache");
+      xhttp.send();
+    }
+  </script>
+</html>
